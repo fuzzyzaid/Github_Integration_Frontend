@@ -47,7 +47,7 @@ export class GithubViewComponent {
 
   ngOnInit(): void {
     // Get username from URL
-    this.username = this.route.snapshot.queryParamMap.get('username') || '';
+    this.username = this.route.snapshot.queryParamMap.get('user') || '';
     this.fetch();
   }
 

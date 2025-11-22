@@ -1,0 +1,10 @@
+<div class="integration-container" style="text-align:center; margin-top:50px;">
+  <h2>GitHub Integration</h2>
+  <button mat-raised-button color="primary" (click)="connectGithub()">
+    Connect to GitHub
+  </button>
+
+  <div *ngIf="connected" style="margin-top:20px; color:green;">
+    ✅ Connected successfully on {{ connectedDate | date:'short' }}
+  </div>
+</div>

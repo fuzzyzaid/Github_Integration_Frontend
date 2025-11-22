@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 
 import { IntegrationRoutingModule } from './integration-routing.module';
 import { IntegrationConnectComponent } from './components/integration-connect/integration-connect.component';
+import { HttpClient, HttpClientModule, provideHttpClient } from '@angular/common/http';
+import { IntegrationService } from './services/integration.service';
 
 
 @NgModule({
@@ -11,8 +13,15 @@ import { IntegrationConnectComponent } from './components/integration-connect/in
   ],
   imports: [
     CommonModule,
-    IntegrationRoutingModule
+    IntegrationRoutingModule,
+    
   ],
+  providers: [
+  provideHttpClient(),
+  IntegrationService
+  ],
+
+
  // exports: [IntegrationConnectComponent]
 })
 export class IntegrationModule { }

@@ -1,0 +1,62 @@
+<!-- components/github-view/github-view.component.html -->
+<div class="container">
+  <div class="controls">
+    <mat-form-field appearance="outline">
+      <mat-label>Active Integration</mat-label>
+      <mat-select [(value)]="selectedIntegration" disabled>
+        <mat-option *ngFor="let i of integrations" [value]="i.value">{{ i.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Entity</mat-label>
+      <mat-select [(value)]="selectedEntity" (selectionChange)="onEntityChange($event.value)">
+        <mat-option *ngFor="let e of entities" [value]="e.value">{{ e.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="selectedEntity !== 'github_orgs'" appearance="outline">
+      <mat-label>Org</mat-label>
+      <input matInput [(ngModel)]="orgLogin" (keyup.enter)="fetch()" placeholder="org (optional)">
+    </mat-form-field>
+
+    <mat-form-field *ngIf="['github_repos','github_commits','github_pulls','github_issues','github_issue_events'].includes(selectedEntity)" appearance="outline">
+      <mat-label>Repo</mat-label>
+      <input matInput [(ngModel)]="repoName" (keyup.enter)="fetch()" placeholder="repo (optional)">
+    </mat-form-field>
+
+    <mat-form-field class="search" appearance="outline">
+      <mat-label>Global search</mat-label>
+      <input matInput [(ngModel)]="search" (input)="onSearchChange(search)" placeholder="search across all fields">
+    </mat-form-field>
+  </div>
+
+  <div class="grid-wrapper" [class.loading]="loading">
+   <ag-grid-angular
+        class="ag-theme-alpine"
+        [rowData]="rowData"
+        [columnDefs]="columnDefs"
+        [pagination]="true"
+        [paginationPageSize]="pageSize"
+        [domLayout]="'autoHeight'"
+        [defaultColDef]="{ sortable: true, filter: true, resizable: true }">
+   </ag-grid-angular>
+  </div>
+
+  <div class="footer">
+    <button mat-stroked-button (click)="onPageChange(page - 1)" [disabled]="page <= 1">Prev</button>
+    <span>Page {{ page }}</span>
+    <button mat-stroked-button (click)="onPageChange(page + 1)" [disabled]="page * pageSize >= total">Next</button>
+
+    <span class="total">Total: {{ total }}</span>
+
+    <mat-form-field appearance="outline" class="small">
+      <mat-label>Sort by</mat-label>
+      <input matInput [(ngModel)]="sortBy" (keyup.enter)="fetch()" placeholder="field name (e.g., createdAt, title)">
+    </mat-form-field>
+    <mat-button-toggle-group [(ngModel)]="sortDir" (change)="fetch()">
+      <mat-button-toggle value="asc">Asc</mat-button-toggle>
+      <mat-button-toggle value="desc">Desc</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+/* components/github-view/github-view.component.css */
+.container {
+  padding: 16px;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr)) 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.controls .search {
+  grid-column: span 2;
+}
+
+.grid-wrapper.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.footer .small {
+  width: 220px;
+}
+
+.footer .total {
+  margin-left: auto;
+}

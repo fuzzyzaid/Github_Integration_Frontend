@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IntegrationService } from '../../services/integration.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-integration-connect',
@@ -10,14 +10,17 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class IntegrationConnectComponent {
 
-connected = false;
+  connected = false;
   connectedDate: Date | null = null;
+  lastSyncedAt: Date | null = null;
   username = "";
   avatar = "";
 
+
   constructor(
     private integrationService: IntegrationService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -46,6 +49,29 @@ connected = false;
   connectGithub() {
     window.location.href = 'http://localhost:3000/auth/github';
   }
+
+  removeIntegration() {
+  this.integrationService.removeIntegration(this.username).subscribe(() => {
+    this.connected = false;
+    this.connectedDate = null;
+    this.username = "";
+    this.avatar = "";
+    this.router.navigate([], { // routing to same route with no query params
+      relativeTo: this.route,
+      queryParams: {},       
+      replaceUrl: true      
+    });
+
+
+  });
+}
+
+resyncIntegration() {
+  this.integrationService.resyncIntegration(this.username).subscribe((res: any) => {
+    console.log("Resync result:", res);
+    alert("Resync complete! Data updated.");
+  });
+}
 
 
 }

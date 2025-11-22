@@ -3,8 +3,11 @@ import { CommonModule } from '@angular/common';
 
 import { IntegrationRoutingModule } from './integration-routing.module';
 import { IntegrationConnectComponent } from './components/integration-connect/integration-connect.component';
-import { HttpClient, HttpClientModule, provideHttpClient } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { IntegrationService } from './services/integration.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @NgModule({
@@ -14,6 +17,9 @@ import { IntegrationService } from './services/integration.service';
   imports: [
     CommonModule,
     IntegrationRoutingModule,
+    MatExpansionModule,
+    MatButtonModule,
+    MatIconModule
     
   ],
   providers: [

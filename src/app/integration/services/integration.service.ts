@@ -15,6 +15,10 @@ export class IntegrationService {
     return this.http.get(`${this.baseUrl}/status`, { params: { username } });
   }
 
+   resyncIntegration(username: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/resync`, { username });
+  }
+
   removeIntegration(username: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/remove`, { username });
   }

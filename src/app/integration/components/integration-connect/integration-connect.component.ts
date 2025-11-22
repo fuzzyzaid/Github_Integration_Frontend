@@ -10,8 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class IntegrationConnectComponent {
 
-
-   connected = false;
+connected = false;
   connectedDate: Date | null = null;
   username = "";
   avatar = "";
@@ -22,18 +21,19 @@ export class IntegrationConnectComponent {
   ) {}
 
   ngOnInit(): void {
-  this.route.queryParams.subscribe(params => {
-    if (params['status'] === 'success') {
-      this.loadStatus(); // Call only after OAuth redirect
-    } else {
-      // optional: loadStatus() on page refresh
-      this.loadStatus();
-    }
-  });
-}
+    this.route.queryParams.subscribe(params => {
+      if (params['status'] === 'success') {
+        this.username = params['user'] || "";
+        this.loadStatus();
+      } else {
+        this.loadStatus();
+      }
+    });
+  }
 
   loadStatus() {
-    this.integrationService.getStatus().subscribe((res: any) => {
+    if (!this.username) return;
+    this.integrationService.getStatus(this.username).subscribe((res: any) => {
       this.connected = res.connected;
       if (res.connected) {
         this.connectedDate = res.connectedAt;
@@ -46,5 +46,6 @@ export class IntegrationConnectComponent {
   connectGithub() {
     window.location.href = 'http://localhost:3000/auth/github';
   }
+
 
 }

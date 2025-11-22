@@ -11,11 +11,12 @@ export class IntegrationService {
 
   constructor(private http: HttpClient) {}
 
-  getStatus(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/status`);
+  getStatus(username: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/status`, { params: { username } });
   }
 
-  removeIntegration(): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/remove`);
+  removeIntegration(username: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/remove`, { username });
   }
+
 }

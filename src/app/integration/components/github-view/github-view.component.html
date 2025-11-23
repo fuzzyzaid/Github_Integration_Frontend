@@ -1,8 +1,10 @@
-<!-- components/github-view/github-view.component.html -->
 <div class="container">
-  <div class="controls">
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+
     <mat-form-field appearance="outline">
-      <mat-label>Active Integration</mat-label>
+      <mat-label>Integration</mat-label>
       <mat-select [(value)]="selectedIntegration" disabled>
         <mat-option *ngFor="let i of integrations" [value]="i.value">{{ i.label }}</mat-option>
       </mat-select>
@@ -17,46 +19,73 @@
 
     <mat-form-field *ngIf="selectedEntity !== 'github_orgs'" appearance="outline">
       <mat-label>Org</mat-label>
-      <input matInput [(ngModel)]="orgLogin" (keyup.enter)="fetch()" placeholder="org (optional)">
+      <input matInput [(ngModel)]="orgLogin" (keyup.enter)="onFilterApply()" placeholder="org">
     </mat-form-field>
 
     <mat-form-field *ngIf="['github_repos','github_commits','github_pulls','github_issues','github_issue_events'].includes(selectedEntity)" appearance="outline">
       <mat-label>Repo</mat-label>
-      <input matInput [(ngModel)]="repoName" (keyup.enter)="fetch()" placeholder="repo (optional)">
+      <input matInput [(ngModel)]="repoName" (keyup.enter)="onFilterApply()" placeholder="repo">
     </mat-form-field>
 
-    <mat-form-field class="search" appearance="outline">
-      <mat-label>Global search</mat-label>
-      <input matInput [(ngModel)]="search" (input)="onSearchChange(search)" placeholder="search across all fields">
+    <mat-form-field appearance="outline" class="search-box">
+      <mat-label>Search</mat-label>
+      <input matInput [(ngModel)]="search" (input)="onSearchChange(search)" placeholder="search everything">
     </mat-form-field>
+
   </div>
 
+  <!-- GRID -->
   <div class="grid-wrapper" [class.loading]="loading">
-   <ag-grid-angular
-        class="ag-theme-alpine"
-        [rowData]="rowData"
-        [columnDefs]="columnDefs"
-        [pagination]="true"
-        [paginationPageSize]="pageSize"
-        [domLayout]="'autoHeight'"
-        [defaultColDef]="{ sortable: true, filter: true, resizable: true }">
-   </ag-grid-angular>
+    <ag-grid-angular
+      class="ag-theme-alpine"
+      [rowData]="rowData"
+      [columnDefs]="columnDefs"
+      [pagination]="false"
+      [defaultColDef]="defaultColDef"
+      [domLayout]="'autoHeight'">
+    </ag-grid-angular>
   </div>
 
-  <div class="footer">
-    <button mat-stroked-button (click)="onPageChange(page - 1)" [disabled]="page <= 1">Prev</button>
-    <span>Page {{ page }}</span>
-    <button mat-stroked-button (click)="onPageChange(page + 1)" [disabled]="page * pageSize >= total">Next</button>
+  <!-- BOTTOM BAR -->
+  <div class="bottom-bar">
 
-    <span class="total">Total: {{ total }}</span>
+    <!-- Left: Pagination -->
+    <div class="pagination-left">
+      <span>{{ rangeStart }}–{{ rangeEnd }} of {{ total }}</span>
 
-    <mat-form-field appearance="outline" class="small">
-      <mat-label>Sort by</mat-label>
-      <input matInput [(ngModel)]="sortBy" (keyup.enter)="fetch()" placeholder="field name (e.g., createdAt, title)">
-    </mat-form-field>
-    <mat-button-toggle-group [(ngModel)]="sortDir" (change)="fetch()">
-      <mat-button-toggle value="asc">Asc</mat-button-toggle>
-      <mat-button-toggle value="desc">Desc</mat-button-toggle>
-    </mat-button-toggle-group>
+      <button mat-icon-button (click)="goFirst()" [disabled]="page <= 1">«</button>
+      <button mat-icon-button (click)="goPrev()" [disabled]="page <= 1">‹</button>
+
+      <span class="page-info">Page {{ page }} / {{ totalPages }}</span>
+
+      <button mat-icon-button (click)="goNext()" [disabled]="page >= totalPages">›</button>
+      <button mat-icon-button (click)="goLast()" [disabled]="page >= totalPages">»</button>
+
+      <mat-form-field appearance="outline" class="page-size">
+        <mat-label>Per page</mat-label>
+        <mat-select [(value)]="pageSize" (selectionChange)="onPageSizeChange($event.value)">
+          <mat-option [value]="30">30</mat-option>
+          <mat-option [value]="50">50</mat-option>
+          <mat-option [value]="100">100</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Right: Sort controls -->
+    <div class="sort-right" *ngIf="availableSortFields?.length">
+      <mat-form-field appearance="outline" class="sort-dropdown">
+        <mat-label>Sort by</mat-label>
+        <mat-select [(value)]="sortBy" (selectionChange)="onSortChange(sortBy, sortDir)">
+          <mat-option *ngFor="let f of availableSortFields" [value]="f">{{ f }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-button-toggle-group [(ngModel)]="sortDir" (change)="onSortChange(sortBy, sortDir)">
+        <mat-button-toggle value="asc">Asc</mat-button-toggle>
+        <mat-button-toggle value="desc">Desc</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
   </div>
+
 </div>

@@ -32,25 +32,29 @@ export class GithubViewComponent  implements OnInit, OnChanges{
   repoName = '';
   search = '';
   page = 1;
-  pageSize = 50;
-  sortBy = 'createdAt';
+  pageSize = 30;
+  sortBy = '';
   sortDir: 'asc' | 'desc' = 'desc';
 
   // Grid state
   columnDefs: ColDef[] = [];
+  defaultColDef = { sortable: false, filter: false, resizable: true };
   rowData: any[] = [];
   total = 0;
   loading = false;
 
+
+
+  // helper
+  availableSortFields: string[] = [];
+  totalPages = 1;
+
   constructor(
-    private route: ActivatedRoute,
     private dataService: GithubDataService,
     private integrationService:IntegrationService
   ) {}
 
   ngOnInit(): void {
-    // Get username from URL
-  //  this.username = this.route.snapshot.queryParamMap.get('user') || '';
     this.fetch();
   }
 
@@ -65,10 +69,9 @@ export class GithubViewComponent  implements OnInit, OnChanges{
 
   onEntityChange(entity: string) {
     this.selectedEntity = entity;
-    if (!['github_repos','github_commits','github_pulls','github_issues','github_issue_events'].includes(entity)) {
-      this.repoName = '';
-    }
     this.page = 1;
+    this.sortBy = '';
+    this.availableSortFields = [];
     this.fetch();
   }
 
@@ -78,30 +81,75 @@ export class GithubViewComponent  implements OnInit, OnChanges{
     this.fetch();
   }
 
-  onPageChange(page: number) {
-    this.page = page;
+  onFilterApply() {
+    this.page = 1;
+    this.fetch();
+  }
+
+  onPageSizeChange(size: number) {
+    this.pageSize = Number(size);
+    this.page = 1;
     this.fetch();
   }
 
   onSortChange(sortBy: string, sortDir: 'asc' | 'desc') {
     this.sortBy = sortBy;
     this.sortDir = sortDir;
+    this.page = 1;
+    this.fetch();
+  }
+
+  // pagination helpers
+  get rangeStart() {
+    return this.total === 0 ? 0 : (this.page - 1) * this.pageSize + 1;
+  }
+  get rangeEnd() {
+    return Math.min(this.page * this.pageSize, this.total);
+  }
+
+  goFirst() {
+    if (this.page === 1) return;
+    this.page = 1;
+    this.fetch();
+  }
+  goPrev() {
+    if (this.page <= 1) return;
+    this.page--;
+    this.fetch();
+  }
+  goNext() {
+    if (this.page >= this.totalPages) return;
+    this.page++;
+    this.fetch();
+  }
+  goLast() {
+    if (this.page >= this.totalPages) return;
+    this.page = this.totalPages;
     this.fetch();
   }
 
   private buildColumns(fields: string[]) {
-    this.columnDefs = fields.map((f) => {
-      const isDate = /at$/i.test(f) || f.toLowerCase().includes('date');
+  // set available sort fields (exclude internal fields if desired)
+    this.availableSortFields = fields.slice();
+    // set default sortBy if not set
+    if (!this.sortBy && this.availableSortFields.length) {
+      // prefer createdAt if present else first field
+      this.sortBy = this.availableSortFields.includes('createdAt') ? 'createdAt' : this.availableSortFields[0];
+    }
+
+    this.columnDefs = fields.map((field) => {
+      const isDate = /at$/i.test(field) || field.toLowerCase().includes('date');
       return {
-        headerName: f,
-        field: f,
-        sortable: true,
-        filter: 'agTextColumnFilter',
-        valueFormatter: isDate ? (p) => (p.value ? new Date(p.value).toLocaleString() : '') : undefined,
-        resizable: true
+        headerName: field,
+        field,
+        // we disable AG Grid's client sorting/filtering because sorting/filtering done on server via dropdown/search
+        sortable: false,
+        filter: false,
+        resizable: true,
+        valueFormatter: isDate ? (p) => (p.value ? new Date(p.value).toLocaleString() : '') : undefined
       } as ColDef;
     });
-  }
+}
 
   fetch() {
     if (!this.username) return;
@@ -114,24 +162,39 @@ export class GithubViewComponent  implements OnInit, OnChanges{
       search: this.search || undefined,
       page: this.page,
       pageSize: this.pageSize,
-      sortBy: this.sortBy,
+      sortBy: this.sortBy || undefined,
       sortDir: this.sortDir
     }).subscribe({
       next: (res) => {
         if (res.needsSync) {
-          // 🔥 Backend says no data, trigger sync
+          // if backend instructs to sync, trigger resync then re-fetch
           this.integrationService.resyncIntegration(this.username).subscribe({
-            next: () => this.fetch(), // after sync, fetch again
-            error: () => this.loading = false
+            next: () => this.fetch(),
+            error: () => { this.loading = false; }
           });
-        } else {
-          this.total = res.total;
-          this.rowData = res.rows;
-          this.buildColumns(res.fields);
-          this.loading = false;
+          return;
         }
+
+        this.total = res.total || 0;
+        this.rowData = res.rows || [];
+        // fields from backend define columns (dynamic)
+        const fields = res.fields || [];
+        this.buildColumns(fields);
+
+        this.totalPages = Math.max(1, Math.ceil(this.total / this.pageSize));
+        // ensure page is within bounds
+        if (this.page > this.totalPages) {
+          this.page = this.totalPages;
+          this.fetch();
+          return;
+        }
+
+        this.loading = false;
       },
-      error: () => this.loading = false
+      error: (err) => {
+        console.error('Fetch error', err);
+        this.loading = false;
+      }
     });
   }
 

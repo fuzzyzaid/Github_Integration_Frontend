@@ -25,7 +25,7 @@ export class GithubDataService {
       .set('collection', collection)
       .set('username', String(options.username))
       .set('page', String(options.page || 1))
-      .set('pageSize', String(options.pageSize || 50))
+      .set('pageSize', String(options.pageSize || 30))
       .set('sortDir', options.sortDir || 'desc');
 
     if (options.sortBy) params = params.set('sortBy', options.sortBy);

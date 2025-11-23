@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,OnChanges, Input, SimpleChanges } from '@angular/core';
 import { ColDef } from 'ag-grid-community';
 import { GithubDataService } from '../../services/github-data.service';
 import { ActivatedRoute } from '@angular/router';
+import { IntegrationService } from '../../services/integration.service';
 
 @Component({
   selector: 'app-github-view',
@@ -9,7 +10,8 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './github-view.component.html',
   styleUrl: './github-view.component.css'
 })
-export class GithubViewComponent {
+export class GithubViewComponent  implements OnInit, OnChanges{
+  @Input() username = '';
   integrations = [{ label: 'Github', value: 'github' }];
   selectedIntegration = 'github';
 
@@ -25,7 +27,7 @@ export class GithubViewComponent {
   selectedEntity = 'github_orgs';
 
   // Query state
-  username = ''; // <-- use GitHub username
+  
   orgLogin = '';
   repoName = '';
   search = '';
@@ -42,7 +44,8 @@ export class GithubViewComponent {
 
   constructor(
     private route: ActivatedRoute,
-    private dataService: GithubDataService
+    private dataService: GithubDataService,
+    private integrationService:IntegrationService
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +53,15 @@ export class GithubViewComponent {
     this.username = this.route.snapshot.queryParamMap.get('user') || '';
     this.fetch();
   }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['username'] && !changes['username'].firstChange) {
+      // React if parent passes a new username
+      this.page = 1;
+      this.fetch();
+    }
+  }
+
 
   onEntityChange(entity: string) {
     this.selectedEntity = entity;
@@ -92,7 +104,7 @@ export class GithubViewComponent {
   }
 
   fetch() {
-    if (!this.username) return; // must have username
+    if (!this.username) return;
 
     this.loading = true;
     this.dataService.query(this.selectedEntity, {
@@ -106,12 +118,21 @@ export class GithubViewComponent {
       sortDir: this.sortDir
     }).subscribe({
       next: (res) => {
-        this.total = res.total;
-        this.rowData = res.rows;
-        this.buildColumns(res.fields);
-        this.loading = false;
+        if (res.needsSync) {
+          // 🔥 Backend says no data, trigger sync
+          this.integrationService.resyncIntegration(this.username).subscribe({
+            next: () => this.fetch(), // after sync, fetch again
+            error: () => this.loading = false
+          });
+        } else {
+          this.total = res.total;
+          this.rowData = res.rows;
+          this.buildColumns(res.fields);
+          this.loading = false;
+        }
       },
       error: () => this.loading = false
     });
   }
+
 }

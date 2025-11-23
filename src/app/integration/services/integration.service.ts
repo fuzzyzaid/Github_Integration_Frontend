@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 export class IntegrationService {
 
   private baseUrl = 'http://localhost:3000/integration';
+  private gitUrl = 'http://localhost:3000/github';
 
   constructor(private http: HttpClient) {}
 
@@ -16,7 +17,7 @@ export class IntegrationService {
   }
 
    resyncIntegration(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/resync`, { username });
+    return this.http.post(`${this.gitUrl}/resync`, { username });
   }
 
   removeIntegration(username: string): Observable<any> {

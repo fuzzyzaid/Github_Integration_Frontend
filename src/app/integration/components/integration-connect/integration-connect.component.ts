@@ -16,6 +16,8 @@ export class IntegrationConnectComponent {
   username = "";
   avatar = "";
 
+  showGithubView = false; 
+
 
   constructor(
     private integrationService: IntegrationService,
@@ -56,6 +58,7 @@ export class IntegrationConnectComponent {
     this.connectedDate = null;
     this.username = "";
     this.avatar = "";
+    this.showGithubView = false; 
     this.router.navigate([], { // routing to same route with no query params
       relativeTo: this.route,
       queryParams: {},       
@@ -72,6 +75,14 @@ resyncIntegration() {
     alert("Resync complete! Data updated.");
   });
 }
+
+onPanelOpened() {
+    this.showGithubView = true; // instantiate child only when opened
+  }
+
+  onPanelClosed() {
+    this.showGithubView = false; // optionally destroy child when closed
+  }
 
 
 }

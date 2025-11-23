@@ -12,7 +12,10 @@
     <span *ngIf="lastSyncedAt">Last synced: {{ lastSyncedAt | date:'short' }}</span>
   </div>
 
-  <mat-expansion-panel *ngIf="connected" style="margin-top:30px;">
+   <mat-expansion-panel *ngIf="connected"
+                       style="margin-top:30px;"
+                       (opened)="onPanelOpened()"
+                       (closed)="onPanelClosed()">
     <mat-expansion-panel-header>
       <mat-panel-title>Integration Actions</mat-panel-title>
     </mat-expansion-panel-header>
@@ -21,6 +24,9 @@
       <button mat-stroked-button color="warn" (click)="removeIntegration()">Remove Integration</button>
       <button mat-stroked-button color="accent" (click)="resyncIntegration()">Re-sync Integration</button>
     </div>
-    <app-github-view></app-github-view>
+
+    <!-- Lazy load child only when panel is open -->
+    <app-github-view *ngIf="showGithubView" [username]="username"></app-github-view>
   </mat-expansion-panel>
+
 </div>

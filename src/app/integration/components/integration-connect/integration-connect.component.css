@@ -1,0 +1,118 @@
+.integration-container {
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.integration-title {
+  font-size: 2rem;        /* Bigger text */
+  font-weight: 600;
+  margin-bottom: 40px;    /* More space around */
+  color: #003b49;
+}
+
+.connect-btn {
+  margin-bottom: 30px;
+  padding: 10px 25px;
+  font-size: 1.1rem;
+}
+
+.status-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px auto;
+  max-width: 600px;
+  color: #003b49; /* professional green */
+}
+
+.status-left {
+  flex: 2;
+  text-align: left;
+}
+
+.status-line {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.status-right {
+  flex: 1;
+  text-align: center;
+}
+
+.avatar {
+  width: 120px;            /* passport size */
+  height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+
+.username {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #003b49;
+}
+
+.integration-panel {
+  margin-top: 40px;
+}
+
+.panel-title {
+  font-size: 1.25rem;     /* Bigger text */
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+  color: #003b49;
+}
+
+.actions-container {
+  display: flex;
+  justify-content: center;
+  gap: 40px;              /* More space between buttons */
+  margin: 30px 0;
+}
+
+.actions-container button {
+  padding: 10px 20px;
+  font-size: 1rem;
+}
+
+
+/* Responsive layout for mobile/tablet */
+@media (max-width: 768px) {
+  .status-container {
+    flex-direction: column;   /* stack vertically */
+    align-items: center;
+    text-align: center;
+  }
+
+  .status-left {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  .status-right {
+    margin-top: 10px;
+  }
+
+  .avatar {
+    width: 70px;
+    height: 70px;
+  }
+
+  .integration-title {
+    font-size: 1.5rem;        /* slightly smaller on mobile */
+    margin-bottom: 25px;
+  }
+
+  .actions-container {
+    flex-direction: column;   /* stack buttons vertically */
+    gap: 20px;
+  }
+
+  .actions-container button {
+    width: 80%;               /* buttons take more width */
+    max-width: 250px;
+  }
+}

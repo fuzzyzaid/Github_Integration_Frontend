@@ -50,7 +50,7 @@ export class GithubViewComponent  implements OnInit, OnChanges{
 
   ngOnInit(): void {
     // Get username from URL
-    this.username = this.route.snapshot.queryParamMap.get('user') || '';
+  //  this.username = this.route.snapshot.queryParamMap.get('user') || '';
     this.fetch();
   }
 

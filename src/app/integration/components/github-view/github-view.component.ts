@@ -168,6 +168,7 @@ export class GithubViewComponent  implements OnInit, OnChanges{
       next: (res) => {
         if (res.needsSync) {
           // if backend instructs to sync, trigger resync then re-fetch
+          this.loading = true;
           this.integrationService.resyncIntegration(this.username).subscribe({
             next: () => this.fetch(),
             error: () => { this.loading = false; }
@@ -175,6 +176,7 @@ export class GithubViewComponent  implements OnInit, OnChanges{
           return;
         }
 
+        this.loading = false;
         this.total = res.total || 0;
         this.rowData = res.rows || [];
         // fields from backend define columns (dynamic)

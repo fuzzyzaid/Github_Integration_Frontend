@@ -61,6 +61,19 @@
   width: 180px;
 }
 
+.loader-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 40px 0;
+}
+
+.loader-text {
+  margin-top: 15px;
+  font-size: 1.2rem;
+  color: #003b49;
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 768px) {
   .filter-bar mat-form-field {

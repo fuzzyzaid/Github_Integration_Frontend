@@ -36,14 +36,24 @@
 
   <!-- GRID -->
   <div class="grid-wrapper" [class.loading]="loading">
-    <ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="rowData"
-      [columnDefs]="columnDefs"
-      [pagination]="false"
-      [defaultColDef]="defaultColDef"
-      [domLayout]="'autoHeight'">
-    </ag-grid-angular>
+
+     <div *ngIf="loading" class="loader-wrapper">
+        <mat-spinner diameter="60"></mat-spinner>
+        <p class="loader-text">Loading GitHub data...</p>
+     </div>
+
+     <div class="grid-wrapper" *ngIf="!loading">
+         <ag-grid-angular
+          class="ag-theme-alpine"
+          [rowData]="rowData"
+          [columnDefs]="columnDefs"
+          [pagination]="false"
+          [animateRows]="true" 
+          [defaultColDef]="defaultColDef"
+          [domLayout]="'autoHeight'">
+        </ag-grid-angular>
+     </div>
+     
   </div>
 
   <!-- BOTTOM BAR -->

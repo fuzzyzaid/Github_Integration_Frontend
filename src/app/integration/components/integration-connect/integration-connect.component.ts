@@ -17,6 +17,7 @@ export class IntegrationConnectComponent {
   avatar = "";
 
   showGithubView = false; 
+  loading = false;
 
 
   constructor(
@@ -28,6 +29,7 @@ export class IntegrationConnectComponent {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       if (params['status'] === 'success') {
+        this.loading = true;
         this.username = params['user'] || "";
         this.loadStatus();
       } else {
@@ -45,10 +47,12 @@ export class IntegrationConnectComponent {
         this.username = res.username;
         this.avatar = res.avatar;
       }
+       this.loading = false; // stop loader
     });
   }
 
   connectGithub() {
+    this.loading = true;
     window.location.href = 'http://localhost:3000/auth/github';
   }
 

@@ -17,6 +17,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AgGridModule } from 'ag-grid-angular';
 import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 import { GithubDataService } from './services/github-data.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -38,7 +40,9 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     MatIconModule,
     FormsModule,
     ReactiveFormsModule,
-    AgGridModule
+    AgGridModule,
+    MatProgressSpinnerModule
+
     
   ],
   providers: [

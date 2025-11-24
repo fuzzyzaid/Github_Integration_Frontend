@@ -1,30 +1,43 @@
 <div class="integration-container">
-  <h2 class="integration-title">GitHub Integration</h2>
 
-  <button mat-raised-button color="primary"
-          (click)="connectGithub()"
-          [disabled]="connected"
-          class="connect-btn">
-    Connect to GitHub
-  </button>
-
-  <div *ngIf="connected" class="status-container">
-    <div class="status-left">
-      <p class="status-line">
-        ✅ Connected on {{ connectedDate | date:'short' }}
-        <span *ngIf="lastSyncedAt"> | Last synced: {{ lastSyncedAt | date:'short' }}</span>
-      </p>
-    </div>
-    <div class="status-right">
-      <img [src]="avatar" alt="avatar" class="avatar">
-      <div class="username">{{ username }}</div>
-    </div>
+  <div *ngIf="loading" class="loader-wrapper">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="loader-text">Connecting to GitHub...</p>
   </div>
+
+  <div *ngIf="!connected && !loading" class="connect-card-before">
+    <h2 class="connect-title">GitHub Integration</h2>
+    <p class="connect-description">
+      Connect your GitHub account to sync your Organizations, Repositories,
+      Commits, Pull Requests and Issues into your dashboard.
+    </p>
+    <button mat-raised-button 
+            color="primary"
+            (click)="connectGithub()"
+            class="connect-btn-large">
+      Connect to GitHub
+    </button>
+  </div>
+
+  <div *ngIf="connected" class="connected-card">
+  <div class="connected-left">
+    <img [src]="avatar" alt="avatar" class="avatar-large">
+  </div>
+  <div class="connected-right">
+    <h2 class="welcome-text">
+      <mat-icon class="green-check">check_circle</mat-icon>
+      Welcome {{ username }}!
+    </h2>
+    <p class="connected-info">Connected on {{ connectedDate | date:'short' }}</p>
+    <p *ngIf="lastSyncedAt" class="connected-info">Last synced: {{ lastSyncedAt | date:'short' }}</p>
+  </div>
+</div>
 
   <mat-expansion-panel *ngIf="connected"
                        class="integration-panel"
                        (opened)="onPanelOpened()"
                        (closed)="onPanelClosed()">
+
     <mat-expansion-panel-header>
       <mat-panel-title class="panel-title">Integration Actions</mat-panel-title>
     </mat-expansion-panel-header>
@@ -36,4 +49,5 @@
 
     <app-github-view *ngIf="showGithubView" [username]="username"></app-github-view>
   </mat-expansion-panel>
+
 </div>

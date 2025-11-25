@@ -90,7 +90,14 @@ export class GithubViewComponent  implements OnInit, OnChanges{
     this.fetch();
   }
 
-  onFilterApply() {
+  onFilterOrgApply(value: string) {
+    this.orgLogin=value
+    this.page = 1;
+    this.fetch();
+  }
+
+   onFilterRepoApply(value: string) {
+    this.repoName=value
     this.page = 1;
     this.fetch();
   }

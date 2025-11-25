@@ -3,6 +3,8 @@ import { ColDef } from 'ag-grid-community';
 import { GithubDataService } from '../../services/github-data.service';
 import { ActivatedRoute } from '@angular/router';
 import { IntegrationService } from '../../services/integration.service';
+import { Output, EventEmitter } from '@angular/core';
+
 
 @Component({
   selector: 'app-github-view',
@@ -12,8 +14,16 @@ import { IntegrationService } from '../../services/integration.service';
 })
 export class GithubViewComponent  implements OnInit, OnChanges{
   @Input() username = '';
+  @Output() removed = new EventEmitter<void>();
+  @Output() resynced = new EventEmitter<void>();
+
+  
   integrations = [{ label: 'Github', value: 'github' }];
   selectedIntegration = 'github';
+
+  removing = false;
+  resyncing = false;
+
 
   entities = [
     { label: 'Organizations', value: 'github_orgs' },
@@ -60,7 +70,6 @@ export class GithubViewComponent  implements OnInit, OnChanges{
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['username'] && !changes['username'].firstChange) {
-      // React if parent passes a new username
       this.page = 1;
       this.fetch();
     }
@@ -129,11 +138,8 @@ export class GithubViewComponent  implements OnInit, OnChanges{
   }
 
   private buildColumns(fields: string[]) {
-  // set available sort fields (exclude internal fields if desired)
     this.availableSortFields = fields.slice();
-    // set default sortBy if not set
     if (!this.sortBy && this.availableSortFields.length) {
-      // prefer createdAt if present else first field
       this.sortBy = this.availableSortFields.includes('createdAt') ? 'createdAt' : this.availableSortFields[0];
     }
 
@@ -142,7 +148,6 @@ export class GithubViewComponent  implements OnInit, OnChanges{
       return {
         headerName: field,
         field,
-        // we disable AG Grid's client sorting/filtering because sorting/filtering done on server via dropdown/search
         sortable: false,
         filter: false,
         resizable: true,
@@ -167,7 +172,6 @@ export class GithubViewComponent  implements OnInit, OnChanges{
     }).subscribe({
       next: (res) => {
         if (res.needsSync) {
-          // if backend instructs to sync, trigger resync then re-fetch
           this.loading = true;
           this.integrationService.resyncIntegration(this.username).subscribe({
             next: () => this.fetch(),
@@ -179,12 +183,10 @@ export class GithubViewComponent  implements OnInit, OnChanges{
         this.loading = false;
         this.total = res.total || 0;
         this.rowData = res.rows || [];
-        // fields from backend define columns (dynamic)
         const fields = res.fields || [];
         this.buildColumns(fields);
 
         this.totalPages = Math.max(1, Math.ceil(this.total / this.pageSize));
-        // ensure page is within bounds
         if (this.page > this.totalPages) {
           this.page = this.totalPages;
           this.fetch();
@@ -199,5 +201,40 @@ export class GithubViewComponent  implements OnInit, OnChanges{
       }
     });
   }
+
+
+  removeIntegration() {
+  if (!this.username) return;
+
+  this.removing = true;
+  this.integrationService.removeIntegration(this.username).subscribe({
+    next: () => {
+      this.removing = false;
+      this.removed.emit();     
+    },
+    error: () => {
+      this.removing = false;
+      alert("Failed to remove integration.");
+    }
+  });
+}
+
+resyncIntegration() {
+  if (!this.username) return;
+
+  this.resyncing = true;
+  this.integrationService.resyncIntegration(this.username).subscribe({
+    next: () => {
+      this.resyncing = false;
+      this.resynced.emit();
+      this.fetch();             
+    },
+    error: () => {
+      this.resyncing = false;
+      alert("Re-sync failed.");
+    }
+  });
+}
+
 
 }

@@ -20,38 +20,35 @@
   </div>
 
   <div *ngIf="connected" class="connected-card">
-  <div class="connected-left">
-    <img [src]="avatar" alt="avatar" class="avatar-large">
+    <div class="connected-left">
+      <img [src]="avatar" alt="avatar" class="avatar-large">
+    </div>
+    <div class="connected-right">
+      <h2 class="welcome-text">
+        <mat-icon class="green-check">check_circle</mat-icon>
+        Welcome {{ username }}!
+      </h2>
+      <p class="connected-info">Connected on {{ connectedDate | date:'short' }}</p>
+      <p *ngIf="lastSyncedAt" class="connected-info">Last synced: {{ lastSyncedAt | date:'short' }}</p>
+    </div>
   </div>
-  <div class="connected-right">
-    <h2 class="welcome-text">
-      <mat-icon class="green-check">check_circle</mat-icon>
-      Welcome {{ username }}!
-    </h2>
-    <p class="connected-info">Connected on {{ connectedDate | date:'short' }}</p>
-    <p *ngIf="lastSyncedAt" class="connected-info">Last synced: {{ lastSyncedAt | date:'short' }}</p>
-  </div>
-</div>
 
   <mat-expansion-panel *ngIf="connected"
                        class="integration-panel"
                        (opened)="onPanelOpened()"
                        (closed)="onPanelClosed()">
 
-    <mat-expansion-panel-header>
-      <mat-panel-title class="panel-title">Integration Actions</mat-panel-title>
-    </mat-expansion-panel-header>
+      <mat-expansion-panel-header>
+        <mat-panel-title class="panel-title">Integration Actions</mat-panel-title>
+      </mat-expansion-panel-header>
 
-    <div class="actions-container">
-      <button mat-stroked-button color="warn" (click)="removeIntegration()">Remove Integration</button>
-      <button mat-stroked-button color="accent" (click)="resyncIntegration()">Re-sync Integration</button>
-    </div>
-    <div *ngIf="removeSyncer" class="loader-wrapper">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p class="loader-text">Removing .....</p>
-  </div>
+      <app-github-view 
+          *ngIf="showGithubView" 
+          [username]="username"
+          (removed)="afterRemove()"
+          (resynced)="afterResync()">
+      </app-github-view>
 
-    <app-github-view *ngIf="showGithubView" [username]="username"></app-github-view>
   </mat-expansion-panel>
 
 </div>

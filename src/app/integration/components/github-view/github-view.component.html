@@ -1,5 +1,21 @@
 <div class="container">
 
+  <div class="actions-container">
+
+  <button mat-stroked-button color="warn" (click)="removeIntegration()" [disabled]="removing || resyncing">
+    Remove Integration
+  </button>
+
+  <button mat-stroked-button color="accent" (click)="resyncIntegration()" [disabled]="removing || resyncing">
+    Re-sync Integration
+  </button>
+
+</div>
+<div *ngIf="removing || resyncing" class="loader-wrapper">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>{{ removing ? 'Removing…' : 'Re-syncing…' }}</p>
+</div>
+
   <!-- FILTER BAR -->
   <div class="filter-bar">
 

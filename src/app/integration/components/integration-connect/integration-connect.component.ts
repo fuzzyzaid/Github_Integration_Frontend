@@ -48,7 +48,7 @@ export class IntegrationConnectComponent {
         this.username = res.username;
         this.avatar = res.avatar;
       }
-       this.loading = false; // stop loader
+       this.loading = false; 
     });
   }
 
@@ -57,47 +57,32 @@ export class IntegrationConnectComponent {
     window.location.href = 'http://localhost:3000/auth/github';
   }
 
- removeIntegration() {
-  this.removeSyncer = true;
-  this.integrationService.removeIntegration(this.username).subscribe({
-    next: () => {
-      this.connected = false;
-      this.connectedDate = null;
-      this.username = "";
-      this.avatar = "";
-      this.showGithubView = false;
 
-      // reset URL params
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: {},
-        replaceUrl: true
-      });
+afterRemove() {
+  this.connected = false;
+  this.connectedDate = null;
+  this.username = "";
+  this.avatar = "";
+  this.showGithubView = false;
 
-      this.removeSyncer = false; // hide spinner after success
-    },
-    error: (err) => {
-      console.error('Remove integration failed', err);
-      this.removeSyncer = false; // hide spinner on error
-      alert("Failed to remove integration.");
-    }
+  this.router.navigate([], {
+    relativeTo: this.route,
+    queryParams: {},
+    replaceUrl: true
   });
 }
 
-
-resyncIntegration() {
-  this.integrationService.resyncIntegration(this.username).subscribe((res: any) => {
-    console.log("Resync result:", res);
-    alert("Resync complete! Data updated.");
-  });
+afterResync() {
+  this.lastSyncedAt = new Date();
 }
+
 
 onPanelOpened() {
-    this.showGithubView = true; // instantiate child only when opened
+    this.showGithubView = true; 
   }
 
   onPanelClosed() {
-    this.showGithubView = false; // optionally destroy child when closed
+    this.showGithubView = false; 
   }
 
 

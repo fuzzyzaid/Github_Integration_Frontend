@@ -46,6 +46,10 @@
       <button mat-stroked-button color="warn" (click)="removeIntegration()">Remove Integration</button>
       <button mat-stroked-button color="accent" (click)="resyncIntegration()">Re-sync Integration</button>
     </div>
+    <div *ngIf="removeSyncer" class="loader-wrapper">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="loader-text">Removing .....</p>
+  </div>
 
     <app-github-view *ngIf="showGithubView" [username]="username"></app-github-view>
   </mat-expansion-panel>

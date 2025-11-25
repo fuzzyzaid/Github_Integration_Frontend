@@ -18,6 +18,7 @@ export class IntegrationConnectComponent {
 
   showGithubView = false; 
   loading = false;
+  removeSyncer=false;
 
 
   constructor(
@@ -56,22 +57,33 @@ export class IntegrationConnectComponent {
     window.location.href = 'http://localhost:3000/auth/github';
   }
 
-  removeIntegration() {
-  this.integrationService.removeIntegration(this.username).subscribe(() => {
-    this.connected = false;
-    this.connectedDate = null;
-    this.username = "";
-    this.avatar = "";
-    this.showGithubView = false; 
-    this.router.navigate([], { // routing to same route with no query params
-      relativeTo: this.route,
-      queryParams: {},       
-      replaceUrl: true      
-    });
+ removeIntegration() {
+  this.removeSyncer = true;
+  this.integrationService.removeIntegration(this.username).subscribe({
+    next: () => {
+      this.connected = false;
+      this.connectedDate = null;
+      this.username = "";
+      this.avatar = "";
+      this.showGithubView = false;
 
+      // reset URL params
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {},
+        replaceUrl: true
+      });
 
+      this.removeSyncer = false; // hide spinner after success
+    },
+    error: (err) => {
+      console.error('Remove integration failed', err);
+      this.removeSyncer = false; // hide spinner on error
+      alert("Failed to remove integration.");
+    }
   });
 }
+
 
 resyncIntegration() {
   this.integrationService.resyncIntegration(this.username).subscribe((res: any) => {

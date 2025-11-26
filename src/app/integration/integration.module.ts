@@ -51,7 +51,5 @@ ModuleRegistry.registerModules([AllCommunityModule]);
   GithubDataService
   ],
 
-
- // exports: [IntegrationConnectComponent]
 })
 export class IntegrationModule { }

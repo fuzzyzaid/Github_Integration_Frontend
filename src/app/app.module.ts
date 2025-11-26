@@ -14,7 +14,6 @@ import { IntegrationService } from './integration/services/integration.service';
   imports: [
     BrowserModule,
     AppRoutingModule,
-  //  IntegrationModule
   ],
   providers: [],
   bootstrap: [AppComponent]

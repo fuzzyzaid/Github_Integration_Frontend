@@ -16,7 +16,6 @@
     <p>{{ removing ? 'Removing…' : 'Re-syncing…' }}</p>
 </div>
 
-  <!-- FILTER BAR -->
   <div class="filter-bar">
 
     <mat-form-field appearance="outline">
@@ -50,7 +49,6 @@
 
   </div>
 
-  <!-- GRID -->
   <div class="grid-wrapper" [class.loading]="loading">
 
      <div *ngIf="loading" class="loader-wrapper">
@@ -72,10 +70,8 @@
      
   </div>
 
-  <!-- BOTTOM BAR -->
   <div class="bottom-bar">
 
-    <!-- Left: Pagination -->
     <div class="pagination-left">
       <span>{{ rangeStart }}–{{ rangeEnd }} of {{ total }}</span>
 
@@ -97,7 +93,6 @@
       </mat-form-field>
     </div>
 
-    <!-- Right: Sort controls -->
     <div class="sort-right" *ngIf="availableSortFields?.length">
       <mat-form-field appearance="outline" class="sort-dropdown">
         <mat-label>Sort by</mat-label>

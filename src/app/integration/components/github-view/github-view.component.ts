@@ -58,7 +58,7 @@ export class GithubViewComponent implements OnInit, OnChanges {
     this.fetch();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges): void { // check if the user is changed or not. If chnaged reset the pagination and fetch again.
     if (changes['username'] && !changes['username'].firstChange) {
       this.page = 1;
       this.fetch();
@@ -121,7 +121,7 @@ export class GithubViewComponent implements OnInit, OnChanges {
   goLast() { if (this.page < this.totalPages) { this.page = this.totalPages; this.fetch(); } }
 
   /* -----------------------------------------------------
-     FLATTEN OBJECTS FOR AG-GRID
+     Formatting Data to view in the UI
   ------------------------------------------------------ */
   private flattenObject(obj: any, parentKey = '', result: any = {}): any {
     if (!obj || typeof obj !== 'object') return result;

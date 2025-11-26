@@ -98,11 +98,15 @@ export class GithubViewComponent implements OnInit, OnChanges {
   }
 
   onSortChange(sortBy: string, sortDir: 'asc' | 'desc') {
-    this.sortBy = sortBy;
-    this.sortDir = sortDir;
-    this.page = 1;
-    this.fetch();
+  if (!sortBy || sortBy.trim() === '') {
+    sortBy = this.availableSortFields[0] || '_id';
   }
+
+  this.sortBy = sortBy;
+  this.sortDir = sortDir;
+  this.page = 1;
+  this.fetch();
+}
 
   get rangeStart() {
     return this.total === 0 ? 0 : (this.page - 1) * this.pageSize + 1;
@@ -147,6 +151,17 @@ export class GithubViewComponent implements OnInit, OnChanges {
 
     const fields = Object.keys(rows[0]);
     this.availableSortFields = fields;
+
+    if (!this.sortBy || this.sortBy.trim() === '') {
+    if (fields.includes('_id')) {
+      this.sortBy = '_id';
+      this.sortDir = 'asc';
+    } else {
+      this.sortBy = fields[0];
+      this.sortDir = 'asc';
+    }
+  }
+
 
     this.columnDefs = fields.map(field => ({
       headerName: field,
